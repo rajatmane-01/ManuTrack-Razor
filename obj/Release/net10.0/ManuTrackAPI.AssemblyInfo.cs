@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("ManuTrackAPI")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Release")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+e2256fbf63b00748d3570cb9a9140f6d46f3cb79")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+781d096ca507a0b9a7669ede08c6a3044a831d84")]
 [assembly: System.Reflection.AssemblyProductAttribute("ManuTrackAPI")]
 [assembly: System.Reflection.AssemblyTitleAttribute("ManuTrackAPI")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
