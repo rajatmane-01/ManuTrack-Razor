@@ -1,0 +1,6 @@
+@ManuTrackAPI_HostAddress = http://localhost:5089
+
+GET {{ManuTrackAPI_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
