@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\2487316\\OneDrive - Cognizant\\Desktop\\Demo Project\\ManuTrackAPI\\ManuTrackAPI\\ManuTrackAPI.csproj": {}
+    "C:\\Users\\2487316\\OneDrive - Cognizant\\Desktop\\ManuTrack-Razor\\ManuTrackLocal\\ManuTrackAPI\\ManuTrackAPI.csproj": {}
   },
   "projects": {
-    "C:\\Users\\2487316\\OneDrive - Cognizant\\Desktop\\Demo Project\\ManuTrackAPI\\ManuTrackAPI\\ManuTrackAPI.csproj": {
+    "C:\\Users\\2487316\\OneDrive - Cognizant\\Desktop\\ManuTrack-Razor\\ManuTrackLocal\\ManuTrackAPI\\ManuTrackAPI.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\2487316\\OneDrive - Cognizant\\Desktop\\Demo Project\\ManuTrackAPI\\ManuTrackAPI\\ManuTrackAPI.csproj",
+        "projectUniqueName": "C:\\Users\\2487316\\OneDrive - Cognizant\\Desktop\\ManuTrack-Razor\\ManuTrackLocal\\ManuTrackAPI\\ManuTrackAPI.csproj",
         "projectName": "ManuTrackAPI",
-        "projectPath": "C:\\Users\\2487316\\OneDrive - Cognizant\\Desktop\\Demo Project\\ManuTrackAPI\\ManuTrackAPI\\ManuTrackAPI.csproj",
+        "projectPath": "C:\\Users\\2487316\\OneDrive - Cognizant\\Desktop\\ManuTrack-Razor\\ManuTrackLocal\\ManuTrackAPI\\ManuTrackAPI.csproj",
         "packagesPath": "C:\\Users\\2487316\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\2487316\\OneDrive - Cognizant\\Desktop\\Demo Project\\ManuTrackAPI\\ManuTrackAPI\\obj\\",
+        "outputPath": "C:\\Users\\2487316\\OneDrive - Cognizant\\Desktop\\ManuTrack-Razor\\ManuTrackLocal\\ManuTrackAPI\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
@@ -102,7 +102,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.201/PortableRuntimeIdentifierGraph.json",
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.202/PortableRuntimeIdentifierGraph.json",
           "packagesToPrune": {
             "Microsoft.AspNetCore": "(,10.0.32767]",
             "Microsoft.AspNetCore.Antiforgery": "(,10.0.32767]",
