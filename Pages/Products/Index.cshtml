@@ -1,0 +1,406 @@
+@page
+@model ManuTrackAPI.Pages.Products.IndexModel
+
+<h4 class="fw-bold mb-4">Products & BOM Management</h4>
+
+@if (!string.IsNullOrEmpty(Model.SuccessMessage))
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        @Model.SuccessMessage
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
+@if (!string.IsNullOrEmpty(Model.ErrorMessage))
+{
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        @Model.ErrorMessage
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h5 class="mb-0">Products</h5>
+    <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#createProductModal">
+        + Add Product
+    </button>
+</div>
+
+<div class="card shadow-sm mb-5">
+    <div class="card-body p-0">
+        <table class="table table-hover mb-0">
+            <thead class="table-light">
+                <tr>
+                    <th>ID</th>
+                    <th>Name</th>
+                    <th>Category</th>
+                    <th>Version</th>
+                    <th>Status</th>
+                    <th>Created</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model.Products.Count == 0)
+                {
+                    <tr>
+                        <td colspan="7" class="text-center text-muted py-4">
+                            No products found. Add one to get started.
+                        </td>
+                    </tr>
+                }
+                @foreach (var p in Model.Products)
+                {
+                    <tr>
+                        <td class="text-muted small">#@p.ProductID</td>
+                        <td class="fw-semibold">@p.Name</td>
+                        <td>@p.Category</td>
+                        <td><span class="badge bg-secondary">v@(p.Version)</span></td>
+                        <td>
+                            @if (p.Status == "Active")
+                            {
+                                <span class="badge bg-success">Active</span>
+                            }
+                            else if (p.Status == "Draft")
+                            {
+                                <span class="badge bg-warning text-dark">Draft</span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-danger">Discontinued</span>
+                            }
+                        </td>
+                        <td class="text-muted small">@p.CreatedAt.ToString("dd MMM yyyy")</td>
+                        <td>
+                            <button class="btn btn-outline-secondary btn-sm me-1"
+                                    onclick="openEditProduct(@p.ProductID, '@p.Name', '@p.Category', '@p.Version', '@p.Status')">
+                                Edit
+                            </button>
+                            <button class="btn btn-outline-success btn-sm me-1"
+                                    onclick="openBOM(@p.ProductID, '@p.Name')">
+                                BOM
+                            </button>
+                            @if (Model.Role == "Admin")
+                            {
+                                <form method="post" asp-page-handler="DeleteProduct"
+                                      style="display:inline"
+                                      onsubmit="return confirm('Delete product @p.Name?')">
+                                    <input type="hidden" name="productId" value="@p.ProductID" />
+                                    <button class="btn btn-outline-danger btn-sm">Delete</button>
+                                </form>
+                            }
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- BOM SECTION -->
+<div id="bomSection" style="display:none;">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h5 class="mb-0">
+            Bill of Materials — <span id="bomProductName" class="text-primary"></span>
+        </h5>
+        <div class="d-flex gap-2">
+            <button class="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target="#createBOMModal">
+                + Add BOM Entry
+            </button>
+            <button class="btn btn-outline-secondary btn-sm" onclick="closeBOM()">
+                ✕ Close
+            </button>
+        </div>
+    </div>
+    <div class="card shadow-sm mb-4">
+        <div class="card-body p-0">
+            <table class="table table-hover mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th>BOM ID</th>
+                        <th>Component</th>
+                        <th>Unit</th>
+                        <th>Quantity</th>
+                        <th>Version</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="bomTableBody">
+                    <tr>
+                        <td colspan="7" class="text-center text-muted py-4">
+                            Select a product to view its BOM.
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- CREATE PRODUCT MODAL -->
+<div class="modal fade" id="createProductModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title fw-bold">Add New Product</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form method="post" asp-page-handler="CreateProduct">
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Product Name</label>
+                        <input type="text" name="Name" class="form-control" required placeholder="e.g. Widget A" />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Category</label>
+                        <input type="text" name="Category" class="form-control" required placeholder="e.g. Electronics" />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Version</label>
+                        <input type="text" name="Version" class="form-control" value="1.0" required />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Status</label>
+                        <select name="Status" class="form-select" required>
+                            <option value="Draft">Draft</option>
+                            <option value="Active">Active</option>
+                            <option value="Discontinued">Discontinued</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Create Product</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- EDIT PRODUCT MODAL -->
+<div class="modal fade" id="editProductModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title fw-bold">Edit Product</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form method="post" asp-page-handler="UpdateProduct">
+                <div class="modal-body">
+                    <input type="hidden" name="ProductID" id="editProductId" />
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Product Name</label>
+                        <input type="text" name="Name" id="editProductName" class="form-control" required />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Category</label>
+                        <input type="text" name="Category" id="editProductCategory" class="form-control" required />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Version</label>
+                        <input type="text" name="Version" id="editProductVersion" class="form-control" required />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Status</label>
+                        <select name="Status" id="editProductStatus" class="form-select" required>
+                            <option value="Draft">Draft</option>
+                            <option value="Active">Active</option>
+                            <option value="Discontinued">Discontinued</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save Changes</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- CREATE BOM MODAL -->
+<div class="modal fade" id="createBOMModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title fw-bold">Add BOM Entry</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form method="post" asp-page-handler="CreateBOM">
+                <div class="modal-body">
+                    <input type="hidden" name="ProductID" id="bomProductId" />
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Component Name</label>
+                        <input type="text" name="ComponentName" class="form-control" required
+                               placeholder="e.g. Steel Rod (auto-created if new)" />
+                        <div class="form-text">Component will be created automatically if it doesn't exist.</div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Unit</label>
+                        <input type="text" name="Unit" class="form-control" required placeholder="e.g. kg, pcs, m" />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Quantity</label>
+                        <input type="number" name="Quantity" class="form-control" step="0.01" min="0.01" required />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Version</label>
+                        <input type="text" name="Version" class="form-control" value="1.0" required />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Status</label>
+                        <select name="Status" class="form-select" required>
+                            <option value="Active">Active</option>
+                            <option value="Obsolete">Obsolete</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-success">Add to BOM</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- EDIT BOM MODAL -->
+<div class="modal fade" id="editBOMModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title fw-bold">Edit BOM Entry</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form method="post" asp-page-handler="UpdateBOM">
+                <div class="modal-body">
+                    <input type="hidden" name="BOMID" id="editBOMId" />
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Component Name</label>
+                        <input type="text" name="ComponentName" id="editBOMComponent" class="form-control" required />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Unit</label>
+                        <input type="text" name="Unit" id="editBOMUnit" class="form-control" required />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Quantity</label>
+                        <input type="number" name="Quantity" id="editBOMQuantity" class="form-control" step="0.01" min="0.01" required />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Version</label>
+                        <input type="text" name="Version" id="editBOMVersion" class="form-control" required />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Status</label>
+                        <select name="Status" id="editBOMStatus" class="form-select" required>
+                            <option value="Active">Active</option>
+                            <option value="Obsolete">Obsolete</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save Changes</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    let currentProductId = null;
+
+    function openBOM(productId, productName) {
+        currentProductId = productId;
+        document.getElementById('bomProductName').textContent = productName;
+        document.getElementById('bomProductId').value = productId;
+        document.getElementById('bomSection').style.display = 'block';
+        document.getElementById('bomSection').scrollIntoView({ behavior: 'smooth' });
+        loadBOM(productId);
+    }
+
+    function closeBOM() {
+        document.getElementById('bomSection').style.display = 'none';
+        currentProductId = null;
+    }
+
+    async function loadBOM(productId) {
+        const token = '@HttpContext.Session.GetString("token")';
+        const tbody = document.getElementById('bomTableBody');
+        tbody.innerHTML = '<tr><td colspan="7" class="text-center text-muted py-3">Loading...</td></tr>';
+
+        try {
+            const res = await fetch(`/api/v1/products/${productId}/bom`, {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            const data = await res.json();
+
+            if (!data || data.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="7" class="text-center text-muted py-4">No BOM entries yet.</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = data.map(b => `
+                <tr>
+                    <td class="text-muted small">#${b.bomID}</td>
+                    <td class="fw-semibold">${b.componentName}</td>
+                    <td>${b.unit}</td>
+                    <td>${b.quantity}</td>
+                    <td><span class="badge bg-secondary">v${b.version}</span></td>
+                    <td>
+                        ${b.status === 'Active'
+                            ? '<span class="badge bg-success">Active</span>'
+                            : '<span class="badge bg-danger">Obsolete</span>'}
+                    </td>
+                    <td>
+                        <button class="btn btn-outline-secondary btn-sm me-1"
+                            onclick="openEditBOM(${b.bomID}, '${b.componentName}', '${b.unit}', ${b.quantity}, '${b.version}', '${b.status}')">
+                            Edit
+                        </button>
+                        ${b.status === 'Active' ? `
+                        <button class="btn btn-outline-warning btn-sm"
+                            onclick="obsoleteBOM(${b.bomID})">
+                            Obsolete
+                        </button>` : ''}
+                    </td>
+                </tr>
+            `).join('');
+        } catch (e) {
+            tbody.innerHTML = '<tr><td colspan="7" class="text-center text-danger py-3">Failed to load BOM data.</td></tr>';
+        }
+    }
+
+    async function obsoleteBOM(bomId) {
+        if (!confirm('Mark this BOM entry as obsolete?')) return;
+        const token = '@HttpContext.Session.GetString("token")';
+        const res = await fetch(`/api/v1/products/bom/${bomId}/obsolete`, {
+            method: 'PATCH',
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
+        if (res.ok) {
+            loadBOM(currentProductId);
+        } else {
+            alert('Failed to obsolete BOM entry.');
+        }
+    }
+
+    function openEditProduct(id, name, category, version, status) {
+        document.getElementById('editProductId').value = id;
+        document.getElementById('editProductName').value = name;
+        document.getElementById('editProductCategory').value = category;
+        document.getElementById('editProductVersion').value = version;
+        document.getElementById('editProductStatus').value = status;
+        new bootstrap.Modal(document.getElementById('editProductModal')).show();
+    }
+
+    function openEditBOM(bomId, component, unit, quantity, version, status) {
+        document.getElementById('editBOMId').value = bomId;
+        document.getElementById('editBOMComponent').value = component;
+        document.getElementById('editBOMUnit').value = unit;
+        document.getElementById('editBOMQuantity').value = quantity;
+        document.getElementById('editBOMVersion').value = version;
+        document.getElementById('editBOMStatus').value = status;
+        new bootstrap.Modal(document.getElementById('editBOMModal')).show();
+    }
+</script>

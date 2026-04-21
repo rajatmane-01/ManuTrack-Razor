@@ -8,9 +8,9 @@ public class WorkOrder
     public DateTime StartDate { get; set; }
     public DateTime EndDate { get; set; }
 
-    // Pending | InProgress | Completed | Cancelled
+    // Pending , InProgress , Completed , Cancelled
     public string Status { get; set; } = "Pending";
-    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+    public DateTime CreatedAt { get; set; } = DateTime.Now;
 
     public Product? Product { get; set; }
     public ICollection<WorkOrderTask> Tasks { get; set; } = new List<WorkOrderTask>();

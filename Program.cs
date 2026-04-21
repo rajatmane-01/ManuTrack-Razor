@@ -7,16 +7,6 @@ using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// CORS
-builder.Services.AddCors(options =>
-{
-    options.AddPolicy("AllowAngular", policy =>
-    {
-        policy.WithOrigins("http://localhost:4200")
-              .AllowAnyHeader()
-              .AllowAnyMethod();
-    });
-});
 
 // Database
 builder.Services.AddDbContext<AppDbContext>(options =>
@@ -60,7 +50,8 @@ builder.Services.AddControllers();
 
 var app = builder.Build();
 
-app.UseCors("AllowAngular");
+app.MapGet("/", () => Results.Redirect("/Auth/Login"));
+
 app.UseStaticFiles();
 app.UseSession();
 app.UseAuthentication();

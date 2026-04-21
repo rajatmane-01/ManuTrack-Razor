@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("ManuTrackAPI")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+260c052f12e04110f901cce47bd25d59ad1e365a")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+7d2d36ba31ba71fecc0da87ce7d839aa8adaaa2e")]
 [assembly: System.Reflection.AssemblyProductAttribute("ManuTrackAPI")]
 [assembly: System.Reflection.AssemblyTitleAttribute("ManuTrackAPI")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

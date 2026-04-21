@@ -7,7 +7,7 @@ public class Product
     public string Category { get; set; } = string.Empty;
     public string Version { get; set; } = "1.0";
     public string Status { get; set; } = "Draft";
-    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+    public DateTime CreatedAt { get; set; } = DateTime.Now;
 
     public ICollection<BOM> BOMs { get; set; } = new List<BOM>();
 }

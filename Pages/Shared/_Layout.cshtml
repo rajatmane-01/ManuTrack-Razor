@@ -58,7 +58,21 @@
                                 Users
                             </a>
                         </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" href="/Auth/AuditLogs">
+                                Audit Logs
+                            </a>
+                        </li>
                     }
+
+                        @if (Context.Session.GetString("role") == "ComplianceOfficer")
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" href="/Auth/AuditLogs">
+                                    Audit Logs
+                                </a>
+                            </li>
+                        }
 
                     @if (Context.Session.GetString("role") == "Admin" ||
                          Context.Session.GetString("role") == "Planner")

@@ -1,0 +1,337 @@
+@page
+@model ManuTrackAPI.Pages.WorkOrders.IndexModel
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h4 class="fw-bold mb-0">Work Orders</h4>
+    @if (Model.Role == "Admin" || Model.Role == "Planner")
+    {
+        <button class="btn btn-primary btn-sm"
+                onclick="document.getElementById('createForm').classList.toggle('d-none')">
+            + Create Work Order
+        </button>
+    }
+</div>
+
+@if (!string.IsNullOrEmpty(Model.SuccessMessage))
+{
+    <div class="alert alert-success alert-dismissible">
+        @Model.SuccessMessage
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
+
+@if (!string.IsNullOrEmpty(Model.ErrorMessage))
+{
+    <div class="alert alert-danger alert-dismissible">
+        @Model.ErrorMessage
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
+
+<!-- Create Work Order Form -->
+@if (Model.Role == "Admin" || Model.Role == "Planner")
+{
+    <div id="createForm" class="card shadow-sm mb-4 d-none">
+        <div class="card-body">
+            <h5 class="fw-bold mb-3">New Work Order</h5>
+            <form method="post" asp-page-handler="Create">
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label class="form-label fw-bold small">Product</label>
+                        <select name="ProductID" class="form-select">
+                            <option value="0">Select Product</option>
+                            @foreach (var p in Model.Products)
+                            {
+                                <option value="@p.ProductID">@p.Name</option>
+                            }
+                        </select>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label fw-bold small">Quantity</label>
+                        <input name="Quantity" type="number"
+                               class="form-control" value="1" />
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label fw-bold small">Start Date</label>
+                        <input name="StartDate" type="datetime-local"
+                               class="form-control" />
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label fw-bold small">End Date</label>
+                        <input name="EndDate" type="datetime-local"
+                               class="form-control" />
+                    </div>
+                </div>
+                <div class="mt-3 d-flex gap-2">
+                    <button type="submit" class="btn btn-primary btn-sm">
+                        Create
+                    </button>
+                    <button type="button" class="btn btn-secondary btn-sm"
+                            onclick="document.getElementById('createForm').classList.add('d-none')">
+                        Cancel
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+}
+
+<div class="row g-4">
+
+    <!-- LEFT: Work Orders List -->
+    <div class="col-md-5">
+        <div class="card shadow-sm">
+            <div class="card-body p-0">
+                @if (!Model.WorkOrders.Any())
+                {
+                    <div class="p-4 text-center text-muted">
+                        No work orders yet.
+                    </div>
+                }
+                else
+                {
+                    @foreach (var wo in Model.WorkOrders)
+                    {
+                        <a href="/WorkOrders/Index?woId=@wo.WorkOrderID"
+                           class="text-decoration-none">
+                            <div class="p-3 border-bottom hover-bg
+                                @(Model.SelectedWO?.WorkOrderID == wo.WorkOrderID
+                                    ? "bg-primary bg-opacity-10 border-start border-primary border-3"
+                                    : "")">
+                                <div class="d-flex justify-content-between">
+                                    <div>
+                                        <p class="fw-bold mb-0 text-dark">
+                                            WO #@wo.WorkOrderID
+                                        </p>
+                                        <p class="text-muted small mb-0">
+                                            @wo.ProductName • Qty: @wo.Quantity
+                                        </p>
+                                        <p class="text-muted small mb-0">
+                                            @wo.StartDate.ToString("dd/MM/yyyy") →
+                                            @wo.EndDate.ToString("dd/MM/yyyy")
+                                        </p>
+                                    </div>
+                                    <span class="badge @GetStatusBadge(wo.Status) align-self-start">
+                                        @wo.Status
+                                    </span>
+                                </div>
+                            </div>
+                        </a>
+                    }
+                }
+            </div>
+        </div>
+    </div>
+
+    <!-- RIGHT: Tasks -->
+    <div class="col-md-7">
+        @if (Model.SelectedWO != null)
+        {
+            <!-- Work Order Header -->
+            <div class="card shadow-sm mb-3">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            <h5 class="fw-bold mb-1">
+                                WO #@Model.SelectedWO.WorkOrderID
+                            </h5>
+                            <p class="text-muted small mb-0">
+                                @Model.SelectedWO.ProductName •
+                                Qty: @Model.SelectedWO.Quantity
+                            </p>
+                        </div>
+                        <span class="badge @GetStatusBadge(Model.SelectedWO.Status)">
+                            @Model.SelectedWO.Status
+                        </span>
+                    </div>
+
+                    <!-- Status Action Buttons -->
+                    @if (Model.Role == "Admin" || Model.Role == "Planner")
+                    {
+                        <div class="mt-3 d-flex gap-2 flex-wrap">
+                            @if (Model.SelectedWO.Status == "Pending")
+                            {
+                                <form method="post" asp-page-handler="UpdateStatus">
+                                    <input type="hidden" name="woId"
+                                           value="@Model.SelectedWO.WorkOrderID" />
+                                    <input type="hidden" name="status"
+                                           value="InProgress" />
+                                    <button type="submit" class="btn btn-primary btn-sm">
+                                        Start
+                                    </button>
+                                </form>
+                            }
+                            @if (Model.SelectedWO.Status == "InProgress")
+                            {
+                                <form method="post" asp-page-handler="UpdateStatus">
+                                    <input type="hidden" name="woId"
+                                           value="@Model.SelectedWO.WorkOrderID" />
+                                    <input type="hidden" name="status"
+                                           value="Completed" />
+                                    <button type="submit" class="btn btn-success btn-sm">
+                                        Complete
+                                    </button>
+                                </form>
+                            }
+                            @if (Model.SelectedWO.Status != "Completed" &&
+                                 Model.SelectedWO.Status != "Cancelled")
+                            {
+                                <form method="post" asp-page-handler="Cancel">
+                                    <input type="hidden" name="woId"
+                                           value="@Model.SelectedWO.WorkOrderID" />
+                                    <button type="submit"
+                                            class="btn btn-danger btn-sm"
+                                            onclick="return confirm('Cancel this work order?')">
+                                        Cancel
+                                    </button>
+                                </form>
+                            }
+                        </div>
+                    }
+                </div>
+            </div>
+
+            <!-- Tasks -->
+            <div class="d-flex justify-content-between align-items-center mb-2">
+                <h5 class="fw-bold mb-0">Tasks</h5>
+                @if ((Model.Role == "Admin" || Model.Role == "Planner") &&
+                     Model.SelectedWO.Status != "Completed" &&
+                     Model.SelectedWO.Status != "Cancelled")
+                {
+                    <button class="btn btn-purple btn-sm"
+                            style="background-color:#6f42c1;color:white"
+                            onclick="document.getElementById('taskForm').classList.toggle('d-none')">
+                        + Add Task
+                    </button>
+                }
+            </div>
+
+            <!-- Add Task Form -->
+            <div id="taskForm" class="card shadow-sm mb-3 d-none">
+                <div class="card-body">
+                    <form method="post" asp-page-handler="AddTask">
+                        <input type="hidden" name="woId"
+                               value="@Model.SelectedWO.WorkOrderID" />
+                        <div class="mb-3">
+                            <label class="form-label fw-bold small">
+                                Description
+                            </label>
+                            <input name="Description" class="form-control"
+                                   placeholder="Task description" />
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-bold small">
+                                Assign to Operator
+                            </label>
+                            <select name="AssignedTo" class="form-select">
+                                <option value="0">Select Operator</option>
+                                @foreach (var op in Model.Operators)
+                                {
+                                    <option value="@op.UserID">@op.Name</option>
+                                }
+                            </select>
+                        </div>
+                        <div class="d-flex gap-2">
+                            <button type="submit"
+                                    style="background-color:#6f42c1;color:white"
+                                    class="btn btn-sm">
+                                Add Task
+                            </button>
+                            <button type="button" class="btn btn-secondary btn-sm"
+                                    onclick="document.getElementById('taskForm').classList.add('d-none')">
+                                Cancel
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Tasks List -->
+            <div class="card shadow-sm">
+                <div class="card-body p-0">
+                    @if (!Model.Tasks.Any())
+                    {
+                        <div class="p-4 text-center text-muted">
+                            No tasks yet.
+                        </div>
+                    }
+                    else
+                    {
+                        @foreach (var task in Model.Tasks)
+                        {
+                            <div class="p-3 border-bottom">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <p class="fw-bold mb-0">@task.Description</p>
+                                        <p class="text-muted small mb-0">
+                                            Assigned to: @task.AssignedUserName
+                                        </p>
+                                    </div>
+                                    <div class="d-flex align-items-center gap-2">
+                                        <span class="badge @GetStatusBadge(task.Status)">
+                                            @task.Status
+                                        </span>
+
+                                        @if (task.Status == "Pending")
+                                        {
+                                            <form method="post"
+                                                  asp-page-handler="UpdateTaskStatus">
+                                                <input type="hidden" name="taskId"
+                                                       value="@task.TaskID" />
+                                                <input type="hidden" name="woId"
+                                                       value="@Model.SelectedWO.WorkOrderID" />
+                                                <input type="hidden" name="status"
+                                                       value="InProgress" />
+                                                <button type="submit"
+                                                        class="btn btn-primary btn-sm">
+                                                    Start
+                                                </button>
+                                            </form>
+                                        }
+                                        @if (task.Status == "InProgress")
+                                        {
+                                            <form method="post"
+                                                  asp-page-handler="UpdateTaskStatus">
+                                                <input type="hidden" name="taskId"
+                                                       value="@task.TaskID" />
+                                                <input type="hidden" name="woId"
+                                                       value="@Model.SelectedWO.WorkOrderID" />
+                                                <input type="hidden" name="status"
+                                                       value="Done" />
+                                                <button type="submit"
+                                                        class="btn btn-success btn-sm">
+                                                    Done
+                                                </button>
+                                            </form>
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    }
+                </div>
+            </div>
+        }
+        else
+        {
+            <div class="card shadow-sm">
+                <div class="card-body text-center text-muted p-5">
+                    Select a work order to view tasks
+                </div>
+            </div>
+        }
+    </div>
+
+</div>
+
+@functions {
+    string GetStatusBadge(string status) => status switch
+    {
+        "Pending" => "bg-warning text-dark",
+        "InProgress" => "bg-primary",
+        "Completed" => "bg-success",
+        "Cancelled" => "bg-danger",
+        "Done" => "bg-success",
+        _ => "bg-secondary"
+    };
+}

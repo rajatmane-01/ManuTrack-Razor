@@ -10,5 +10,5 @@ public class BOM
     public string Status { get; set; } = "Active";
 
     public Product? Product { get; set; }
-    public Component? Component { get; set; }  // ← make sure this is here
+    public Component? Component { get; set; }  
 }

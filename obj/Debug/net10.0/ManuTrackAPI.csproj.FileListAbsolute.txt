@@ -321,7 +321,6 @@ C:\Users\2487316\OneDrive - Cognizant\Desktop\ManuTrack-Razor\ManuTrackLocal\Man
 C:\Users\2487316\OneDrive - Cognizant\Desktop\ManuTrack-Razor\ManuTrackLocal\ManuTrackAPI\obj\Debug\net10.0\staticwebassets.development.json
 C:\Users\2487316\OneDrive - Cognizant\Desktop\ManuTrack-Razor\ManuTrackLocal\ManuTrackAPI\obj\Debug\net10.0\staticwebassets.build.endpoints.json
 C:\Users\2487316\OneDrive - Cognizant\Desktop\ManuTrack-Razor\ManuTrackLocal\ManuTrackAPI\obj\Debug\net10.0\swae.build.ex.cache
-C:\Users\2487316\OneDrive - Cognizant\Desktop\ManuTrack-Razor\ManuTrackLocal\ManuTrackAPI\obj\Debug\net10.0\staticwebassets.upToDateCheck.txt
 C:\Users\2487316\OneDrive - Cognizant\Desktop\ManuTrack-Razor\ManuTrackLocal\ManuTrackAPI\obj\Debug\net10.0\ManuTrac.B0AA6FBF.Up2Date
 C:\Users\2487316\OneDrive - Cognizant\Desktop\ManuTrack-Razor\ManuTrackLocal\ManuTrackAPI\obj\Debug\net10.0\ManuTrackAPI.dll
 C:\Users\2487316\OneDrive - Cognizant\Desktop\ManuTrack-Razor\ManuTrackLocal\ManuTrackAPI\obj\Debug\net10.0\refint\ManuTrackAPI.dll
@@ -331,3 +330,4 @@ C:\Users\2487316\OneDrive - Cognizant\Desktop\ManuTrack-Razor\ManuTrackLocal\Man
 C:\Users\2487316\OneDrive - Cognizant\Desktop\ManuTrack-Razor\ManuTrackLocal\ManuTrackAPI\obj\Debug\net10.0\ManuTrackAPI.RazorAssemblyInfo.cache
 C:\Users\2487316\OneDrive - Cognizant\Desktop\ManuTrack-Razor\ManuTrackLocal\ManuTrackAPI\obj\Debug\net10.0\ManuTrackAPI.RazorAssemblyInfo.cs
 C:\Users\2487316\OneDrive - Cognizant\Desktop\ManuTrack-Razor\ManuTrackLocal\ManuTrackAPI\bin\Debug\net10.0\ManuTrackAPI.staticwebassets.runtime.json
+C:\Users\2487316\OneDrive - Cognizant\Desktop\ManuTrack-Razor\ManuTrackLocal\ManuTrackAPI\obj\Debug\net10.0\staticwebassets.upToDateCheck.txt

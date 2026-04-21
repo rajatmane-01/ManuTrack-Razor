@@ -113,25 +113,42 @@
                             @user.CreatedAt.ToString("dd/MM/yyyy")
                         </td>
                         <td>
-                            @if (user.Role != "Admin")
-                            {
-                                <form method="post"
-                                      asp-page-handler="Deactivate"
-                                      style="display:inline">
-                                    <input type="hidden"
-                                           name="userId"
-                                           value="@user.UserID" />
-                                    @if (user.IsActive)
-                                    {
-                                        <button type="submit"
-                                                class="btn btn-warning btn-sm"
-                                                onclick="return confirm('Deactivate this user?')">
-                                            Deactivate
-                                        </button>
-                                    }
-                                </form>
-                            }
-                        </td>
+    @if (user.Role != "Admin")
+    {
+        @if (user.IsActive)
+        {
+            <!-- Deactivate button for active users -->
+            <form method="post"
+                  asp-page-handler="Deactivate"
+                  style="display:inline">
+                <input type="hidden"
+                       name="userId"
+                       value="@user.UserID" />
+                <button type="submit"
+                        class="btn btn-warning btn-sm"
+                        onclick="return confirm('Deactivate this user?')">
+                    Deactivate
+                </button>
+            </form>
+        }
+        else
+        {
+            <!-- Activate button for inactive users -->
+            <form method="post"
+                  asp-page-handler="Activate"
+                  style="display:inline">
+                <input type="hidden"
+                       name="userId"
+                       value="@user.UserID" />
+                <button type="submit"
+                        class="btn btn-success btn-sm"
+                        onclick="return confirm('Activate this user?')">
+                    Activate
+                </button>
+            </form>
+        }
+    }
+</td>
                     </tr>
                 }
             </tbody>

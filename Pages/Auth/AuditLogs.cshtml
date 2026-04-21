@@ -1,0 +1,146 @@
+@page
+@model ManuTrackAPI.Pages.Auth.AuditLogsModel
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h4 class="fw-bold mb-0">Audit Logs</h4>
+    <span class="badge bg-secondary">
+        Total: @Model.AuditLogs.Count records
+    </span>
+</div>
+
+@if (!string.IsNullOrEmpty(Model.ErrorMessage))
+{
+    <div class="alert alert-danger">@Model.ErrorMessage</div>
+}
+
+<!-- Filter by User -->
+<div class="card shadow-sm mb-4">
+    <div class="card-body">
+        <form method="get" class="row g-3 align-items-end">
+            <div class="col-md-4">
+                <label class="form-label fw-bold small">Filter by User</label>
+                <select name="userId" class="form-select form-select-sm">
+                    <option value="">All Users</option>
+                    @foreach (var user in Model.Users)
+                    {
+                        <option value="@user.UserID"
+                            selected="@(Model.SelectedUserId == user.UserID)">
+                            @user.Name (@user.Role)
+                        </option>
+                    }
+                </select>
+            </div>
+            <div class="col-md-4">
+                <label class="form-label fw-bold small">Filter by Action</label>
+                <select name="action" class="form-select form-select-sm">
+                    <option value="">All Actions</option>
+                    <option value="Login">Login</option>
+                    <option value="LoginFailed">LoginFailed</option>
+                    <option value="UserCreated">UserCreated</option>
+                    <option value="UserUpdated">UserUpdated</option>
+                    <option value="UserDeactivated">UserDeactivated</option>
+                    <option value="ProductCreated">ProductCreated</option>
+                    <option value="BOMCreated">BOMCreated</option>
+                    <option value="WorkOrderCreated">WorkOrderCreated</option>
+                    <option value="TaskCreated">TaskCreated</option>
+                    <option value="WorkOrderAutoCompleted">AutoCompleted</option>
+                </select>
+            </div>
+            <div class="col-md-2">
+                <button type="submit" class="btn btn-primary btn-sm w-100">
+                    Filter
+                </button>
+            </div>
+            <div class="col-md-2">
+                <a href="/Auth/AuditLogs" class="btn btn-secondary btn-sm w-100">
+                    Clear
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Audit Logs Table -->
+<div class="card shadow-sm">
+    <div class="card-body p-0">
+        @if (!Model.AuditLogs.Any())
+        {
+            <div class="p-4 text-center text-muted">
+                No audit logs found.
+            </div>
+        }
+        else
+        {
+            <table class="table table-hover mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th>ID</th>
+                        <th>User</th>
+                        <th>Role</th>
+                        <th>Action</th>
+                        <th>Details</th>
+                        <th>Timestamp</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var log in Model.AuditLogs)
+                    {
+                        <tr>
+                            <td class="text-muted small">@log.AuditLogID</td>
+                            <td class="fw-bold small">
+                                @(log.User?.Name ?? "System")
+                            </td>
+                            <td>
+                                @if (log.User != null)
+                                {
+                                    <span class="badge @GetRoleBadge(log.User.Role)">
+                                        @log.User.Role
+                                    </span>
+                                }
+                            </td>
+                            <td>
+                                <span class="badge @GetActionBadge(log.Action)">
+                                    @log.Action
+                                </span>
+                            </td>
+                            <td class="text-muted small">
+                                @(log.Details ?? "-")
+                            </td>
+                            <td class="text-muted small">
+                                @log.Timestamp.ToLocalTime().ToString("dd/MM/yyyy HH:mm:ss")
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+    </div>
+</div>
+
+@functions {
+    string GetRoleBadge(string role) => role switch
+    {
+        "Admin" => "bg-purple text-white",
+        "Planner" => "bg-primary",
+        "Operator" => "bg-success",
+        "Inspector" => "bg-warning text-dark",
+        "InventoryManager" => "bg-orange text-white",
+        "ComplianceOfficer" => "bg-danger",
+        _ => "bg-secondary"
+    };
+
+    string GetActionBadge(string action) => action switch
+    {
+        "Login" => "bg-success",
+        "LoginFailed" => "bg-danger",
+        "UserCreated" => "bg-primary",
+        "UserUpdated" => "bg-warning text-dark",
+        "UserDeactivated" => "bg-danger",
+        "ProductCreated" => "bg-info text-dark",
+        "BOMCreated" => "bg-info text-dark",
+        "WorkOrderCreated" => "bg-purple text-white",
+        "WorkOrderAutoCompleted" => "bg-success",
+        "TaskCreated" => "bg-secondary",
+        _ => "bg-secondary"
+    };
+}

@@ -150,6 +150,13 @@ public class AuthService(AppDbContext db, IConfiguration config)
         return await query.OrderByDescending(a => a.Timestamp).ToListAsync();
     }
 
+    // ── GET OPERATORS ──────────────────────────────────────────
+    public async Task<List<UserResponse>> GetOperatorsAsync() =>
+        await db.Users
+            .Where(u => u.Role == "Operator" && u.IsActive)
+            .Select(u => MapToResponse(u))
+            .ToListAsync();
+
     // ── WRITE AUDIT (insert only, never update/delete) ─────────
     public async Task WriteAuditAsync(int userId, string action, string? details = null)
     {

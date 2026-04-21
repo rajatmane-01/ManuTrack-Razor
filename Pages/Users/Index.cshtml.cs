@@ -56,6 +56,28 @@ public class IndexModel : PageModel
         return Page();
     }
 
+    public async Task<IActionResult> OnPostActivateAsync(int userId)
+    {
+        var user = await _auth.GetUserByIdAsync(userId);
+        if (user == null)
+        {
+            ErrorMessage = "User not found.";
+            Users = await _auth.GetAllUsersAsync();
+            return Page();
+        }
+
+        await _auth.UpdateUserAsync(userId, new UpdateUserRequest(
+            user.Name,
+            user.Role,
+            user.Phone,
+            true   // ← IsActive = true
+        ), GetActorId());
+
+        SuccessMessage = $"User {user.Name} activated successfully!";
+        Users = await _auth.GetAllUsersAsync();
+        return Page();
+    }
+
     private int GetActorId()
     {
         var token = HttpContext.Session.GetString("token");
